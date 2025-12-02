@@ -1,0 +1,28 @@
+.cache/
+dist/
+build/
+node_modules/
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.eggs/
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+*.pyc
+*.pyo
+*.pyd
+
+# Dataset files (too large for GitHub)
+dataset/*.csv
+dataset/*.json
+dataset/*.joblib
+dataset/models/*.joblib
+dataset/models/*.json

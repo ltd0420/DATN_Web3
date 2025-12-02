@@ -1,0 +1,30 @@
+# Render Blueprint Configuration
+# File này giúp tự động hóa việc tạo và cấu hình services trên Render
+# Sử dụng: Vào Render Dashboard -> New -> Blueprint -> Chọn file này
+
+services:
+  - type: web
+    name: web3-hr-backend
+    runtime: node
+    plan: free
+    region: singapore  # Hoặc: oregon, frankfurt, etc.
+    buildCommand: npm install
+    startCommand: npm start
+    rootDir: backend
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      # Các biến môi trường khác cần thêm thủ công trong Render Dashboard
+      # vì chứa thông tin nhạy cảm (MONGODB_URI, JWT_SECRET, etc.)
+    
+    # Health check path
+    healthCheckPath: /
+    
+    # Auto-deploy settings
+    autoDeploy: true
+    
+    # Environment variables sẽ được set trong Render Dashboard
+    # Không nên đặt các giá trị nhạy cảm trong file này
+
