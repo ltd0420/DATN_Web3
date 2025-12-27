@@ -110,6 +110,9 @@ function AdminTaskManagement({ user, employeeData }) {
   // File upload states for task editing
   const [editingSelectedFiles, setEditingSelectedFiles] = useState([]);
   const [editingUploadingFiles, setEditingUploadingFiles] = useState(false);
+  
+  // State để chống spam click khi approve task
+  const [approvingTaskId, setApprovingTaskId] = useState(null);
 
   const getFileUploaderLabel = (file, task) => {
     if (file.uploaded_by === task.nguoi_thuc_hien_did) return 'Nhân viên';
@@ -320,7 +323,29 @@ function AdminTaskManagement({ user, employeeData }) {
   };
 
   const handleApproveTask = async (taskId, evaluation) => {
+    // Chống spam click: nếu đang approve task này hoặc task khác thì return
+    if (approvingTaskId !== null) {
+      setSnackbar({ 
+        open: true, 
+        message: 'Đang xử lý phê duyệt, vui lòng đợi...', 
+        severity: 'warning' 
+      });
+      return;
+    }
+
+    // Kiểm tra xem task có đang ở trạng thái "Chờ review" không
+    const task = tasks.find(t => t.task_id === taskId);
+    if (task && task.trang_thai !== 'Chờ review') {
+      setSnackbar({ 
+        open: true, 
+        message: 'Công việc này không ở trạng thái chờ phê duyệt', 
+        severity: 'warning' 
+      });
+      return;
+    }
+
     try {
+      setApprovingTaskId(taskId); // Set loading state
       const response = await apiService.approveTask(taskId, evaluation);
       await fetchData();
       
@@ -365,6 +390,8 @@ function AdminTaskManagement({ user, employeeData }) {
     } catch (err) {
       const errorMessage = err.response?.data?.message || 'Không thể phê duyệt công việc.';
       setSnackbar({ open: true, message: errorMessage, severity: 'error' });
+    } finally {
+      setApprovingTaskId(null); // Reset loading state
     }
   };
 
@@ -1256,14 +1283,21 @@ function AdminTaskManagement({ user, employeeData }) {
                             </IconButton>
                           </Tooltip>
                           {task.trang_thai === 'Chờ review' && (
-                            <Tooltip title="Phê duyệt">
-                              <IconButton
-                                size="small"
-                                color="success"
-                                onClick={() => handleApproveTask(task.task_id, {})}
-                              >
-                                <CheckCircleIcon fontSize="small" />
-                              </IconButton>
+                            <Tooltip title={approvingTaskId === task.task_id ? "Đang xử lý..." : "Phê duyệt"}>
+                              <span>
+                                <IconButton
+                                  size="small"
+                                  color="success"
+                                  disabled={approvingTaskId !== null}
+                                  onClick={() => handleApproveTask(task.task_id, {})}
+                                >
+                                  {approvingTaskId === task.task_id ? (
+                                    <CircularProgress size={16} />
+                                  ) : (
+                                    <CheckCircleIcon fontSize="small" />
+                                  )}
+                                </IconButton>
+                              </span>
                             </Tooltip>
                           )}
                           {/* Nút xóa - hiển thị cho tất cả tasks, kể cả đã hoàn thành */}
@@ -2384,12 +2418,14 @@ function AdminTaskManagement({ user, employeeData }) {
             <Button
               variant="contained"
               color="success"
-              onClick={() => {
-                handleApproveTask(selectedTask.task_id, {});
+              disabled={approvingTaskId !== null}
+              onClick={async () => {
+                await handleApproveTask(selectedTask.task_id, {});
                 setTaskDialogOpen(false);
               }}
+              startIcon={approvingTaskId === selectedTask.task_id ? <CircularProgress size={16} /> : null}
             >
-              Phê duyệt
+              {approvingTaskId === selectedTask.task_id ? 'Đang xử lý...' : 'Phê duyệt'}
             </Button>
           )}
         </DialogActions>

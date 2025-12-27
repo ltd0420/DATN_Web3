@@ -897,6 +897,25 @@ const approveTask = async (req, res) => {
       return res.status(404).json({ message: 'Task not found' });
     }
 
+    // CHỐNG SPAM: Kiểm tra xem task đã được approve chưa
+    if (taskBeforeUpdate.trang_thai === 'Hoàn thành') {
+      console.log(`[Task Approval] ⚠️ Task ${req.params.id} đã được phê duyệt trước đó (trang_thai: ${taskBeforeUpdate.trang_thai})`);
+      return res.status(400).json({ 
+        message: 'Công việc này đã được phê duyệt trước đó. Không thể phê duyệt lại.',
+        alreadyApproved: true,
+        task: taskBeforeUpdate
+      });
+    }
+
+    // Kiểm tra xem task có đang ở trạng thái "Chờ review" không
+    if (taskBeforeUpdate.trang_thai !== 'Chờ review') {
+      console.log(`[Task Approval] ⚠️ Task ${req.params.id} không ở trạng thái "Chờ review" (trang_thai: ${taskBeforeUpdate.trang_thai})`);
+      return res.status(400).json({ 
+        message: `Công việc này không ở trạng thái chờ phê duyệt. Trạng thái hiện tại: ${taskBeforeUpdate.trang_thai}`,
+        currentStatus: taskBeforeUpdate.trang_thai
+      });
+    }
+
     // Calculate reward/penalty
     // Nếu task đã có ngay_hoan_thanh_thuc_te, dùng nó; nếu không dùng thời gian hiện tại
     let ngayHoanThanhThucTe = taskBeforeUpdate.ngay_hoan_thanh_thuc_te || new Date();
@@ -912,8 +931,13 @@ const approveTask = async (req, res) => {
     
     console.log(`[Task Approval] 💰 Reward info:`, rewardInfo);
 
+    // Sử dụng findOneAndUpdate với điều kiện để đảm bảo chỉ update khi task còn ở trạng thái "Chờ review"
+    // Điều này giúp chống race condition khi có nhiều request đồng thời
     const updatedTask = await CongViecGiao.findOneAndUpdate(
-      { task_id: req.params.id },
+      { 
+        task_id: req.params.id,
+        trang_thai: 'Chờ review' // CHỐNG SPAM: Chỉ update khi task còn ở trạng thái "Chờ review"
+      },
       {
         trang_thai: 'Hoàn thành',
         // Cập nhật ngay_hoan_thanh_thuc_te với thời gian đã tính toán (có thể là từ milestone 100%)
@@ -934,8 +958,16 @@ const approveTask = async (req, res) => {
       { new: true, runValidators: true }
     );
 
+    // Nếu updatedTask là null, có nghĩa là task đã được approve bởi request khác (race condition)
     if (!updatedTask) {
-      return res.status(404).json({ message: 'Task not found' });
+      console.log(`[Task Approval] ⚠️ Task ${req.params.id} đã được phê duyệt bởi request khác (race condition detected)`);
+      // Lấy lại task để trả về thông tin
+      const currentTask = await CongViecGiao.findOne({ task_id: req.params.id });
+      return res.status(409).json({ 
+        message: 'Công việc này đã được phê duyệt bởi request khác. Vui lòng làm mới trang.',
+        alreadyApproved: true,
+        task: currentTask
+      });
     }
 
     // AUTOMATIC PAYMENT: Transfer reward to employee wallet via smart contract

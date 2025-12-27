@@ -16,8 +16,26 @@ services:
         value: production
       - key: PORT
         value: 5000
+      - key: FRONTEND_URL
+        value: http://localhost:3000
       # Các biến môi trường khác cần thêm thủ công trong Render Dashboard
-      # vì chứa thông tin nhạy cảm (MONGODB_URI, JWT_SECRET, etc.)
+      # vì chứa thông tin nhạy cảm (MONGODB_URI, JWT_SECRET, PRIVATE_KEYS, etc.)
+      # 
+      # QUAN TRỌNG: Khi thêm environment variables trên Render Dashboard,
+      # đảm bảo KHÔNG có key nào bị trùng lặp!
+      # 
+      # Danh sách đầy đủ các keys cần thêm (xem RENDER_ENV_VARIABLES.md):
+      # - MONGODB_URI
+      # - JWT_SECRET
+      # - RPC_URL
+      # - HR_PAYROLL_ADDRESS
+      # - HR_PAYROLL_PRIVATE_KEY
+      # - TOKEN_ADDRESS
+      # - TUSD_TOKEN_ADDRESS
+      # - DEPARTMENT_MANAGEMENT_ADDRESS
+      # - DEPARTMENT_MANAGEMENT_PRIVATE_KEY
+      # - SIMPLE_TEST_MANAGEMENT_ADDRESS
+      # - SIMPLE_VOTING_MANAGEMENT_ADDRESS
     
     # Health check path
     healthCheckPath: /
