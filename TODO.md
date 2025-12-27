@@ -1,0 +1,3 @@
+- [ ] Xóa điều kiện kiểm tra địa chỉ ví khớp với QR trong handleQrScan
+- [ ] Kiểm tra và sửa lỗi QR không hoạt động trên các máy khác (có thể do camera, MetaMask version, hoặc config)
+- [ ] Test QR login trên nhiều máy

@@ -1,0 +1,17 @@
+{
+  "network": "sepolia",
+  "chainId": "11155111",
+  "deployer": "0x4E873973c9A7057B13448b3F65B17eC3455500C3",
+  "contracts": {
+    "TUSDToken": "0x052bd64b3f565698270f3fcdf98d7502d21f2377",
+    "SimpleTestManagement": "0x5d8a0496eb787165aC77337b1a078f07257D3b5B",
+    "SimpleVotingManagement": "0x500ddf8b3266Fb5c8eEC132EeD9ef3dB7f53327c",
+    "DepartmentManagement": "0xBAAe2F5D4C8c26Bc3D1954fe30914aAF3a1EC7D1"
+  },
+  "config": {
+    "joinRewardAmount": "100000000000000000000",
+    "joinRewardAmountFormatted": "100.0 TUSD",
+    "tusdDecimals": "18"
+  },
+  "timestamp": "2025-12-27T02:50:38.289Z"
+}

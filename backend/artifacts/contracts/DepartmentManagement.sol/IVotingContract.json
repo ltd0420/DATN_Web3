@@ -1,0 +1,98 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "IVotingContract",
+  "sourceName": "contracts/DepartmentManagement.sol",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "employeeDid",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "departmentId",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "periodId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getCandidateWallet",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "departmentId",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "periodId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getTopCandidate",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "employeeDid",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "votes",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "employeeDid",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "departmentId",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "periodId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getVoteCount",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}
